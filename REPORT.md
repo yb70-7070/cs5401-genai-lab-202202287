@@ -44,3 +44,43 @@ Every drift-driven change is logged in `TF_CHANGELOG.md`.
 ## A3 — Cost of the lab
 
 (to be filled)
+
+## A2 — Baseline numbers (MLP, unseeded)
+
+Run on Google Colab, CPU only (GPU disabled).
+
+| Quantity | Value |
+|---|---|
+| Total parameters | 646,260 |
+| Trainable parameters | 646,260 |
+| Non-trainable | 0 |
+| Final training accuracy | 0.5195 |
+| Test loss | 1.4350 |
+| Test accuracy | 0.4962 |
+| Seconds / epoch | 20 s (12 ms/step x 1563 steps) |
+| Total training time | ~3 min 20 s |
+| Download volume | ~170 MB (CIFAR-10 via keras.datasets) |
+
+## B1 verification
+
+Hand-computed parameters match `model.summary()` exactly:
+
+| Layer | By hand | Actual | Match |
+|---|---|---|---|
+| Dense(200) | 614,600 | 614,600 | yes |
+| Dense(150) | 30,150 | 30,150 | yes |
+| Dense(10) | 1,510 | 1,510 | yes |
+| Total | 646,260 | 646,260 | yes |
+
+## B2 verification
+
+Predicted test accuracy: 0.40-0.45, most likely ~0.42.
+Actual: 0.4962. Prediction was low by ~7 points. Root cause: anchored too
+strongly on Foster Ch.2's ~40% figure and did not account for the Adam
+learning rate of 5e-4 converging fully within 10 epochs on this architecture.
+
+## B4 signal (preliminary)
+
+Train acc 0.5195 vs test acc 0.4962 -> gap 2.3 points. Mild overfitting,
+consistent with an unregularised MLP of 646k parameters on 50k images.
+Full analysis follows once validation_split=0.1 is added in B4.
